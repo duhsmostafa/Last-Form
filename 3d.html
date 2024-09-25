@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activate Your Card</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="nextpage.html" class="back-arrow"><img src="http://127.0.0.1:5501/images/back.png" alt="go back"></a>
+        </div>
+        <h1>Create your card PIN</h1>
+        <p>This is what you will use to make transactions with your clync card.</p>
+        <div class="code-inputs">
+            <input type="text" inputmode="numeric" autocomplete="off" maxlength="1" id="code1" oninput="moveFocus(this, 'code2')" onkeydown="handleDelete(event, 'code1', null)" autofocus>
+            <input type="text" inputmode="numeric" autocomplete="off" maxlength="1" id="code2" oninput="moveFocus(this, 'code3')" onkeydown="handleDelete(event, 'code2', 'code1')">
+            <input type="text" inputmode="numeric" autocomplete="off" maxlength="1" id="code3" oninput="moveFocus(this, 'code4')" onkeydown="handleDelete(event, 'code3', 'code2')">
+            <input type="text" inputmode="numeric" autocomplete="off" maxlength="1" id="code4" oninput="moveFocus(this, null)" onkeydown="handleDelete(event, 'code4', 'code3')">
+        </div>
+    </div>
+    <script>
+        function moveFocus(current, nextFieldID) {
+            if (!/^[0-9]$/.test(current.value)) {
+                current.value = ''; 
+                return;
+            }
+            if (current.value.length === 1 && nextFieldID) {
+                document.getElementById(nextFieldID).focus();
+            }
+
+            const codeInputs = document.querySelectorAll('.code-inputs input');
+            const allFilled = Array.from(codeInputs).every(input => input.value.length === 1);
+
+            if (allFilled) {
+                const activationCode = Array.from(codeInputs).map(input => input.value).join('');
+                localStorage.setItem('activationCode', activationCode);
+                setTimeout(() => {
+                    window.location.href = '4th.html'; 
+                }, 100); 
+            }
+        }
+
+        function handleDelete(event, currentId, prevId) {
+            const currentInput = document.getElementById(currentId);
+            if ((event.key === "Backspace" || event.key === "Delete") && currentInput.value === '') {
+                if (prevId !== null) {
+                    const prevInput = document.getElementById(prevId);
+                    if (prevInput.value.length > 0) {
+                        document.getElementById(prevId).focus();
+                    }
+                }
+            }
+        }
+
+        const savedCode = localStorage.getItem('activationCode');
+        console.log(savedCode); 
+    </script>
+</body>
+</html>
